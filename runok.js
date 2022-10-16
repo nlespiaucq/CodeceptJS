@@ -163,6 +163,20 @@ Our community prepared some valuable recipes for setting up CI systems with Code
           cfg.replace(/CodeceptJS.StringOrSecret/g, 'string | object');
         }
       });
+
+      // Full based-promise methods of native helpers
+      copy(`docs/build/${file}`, `docs/build/${name}-ts.js`);
+      replaceInFile(`docs/build/${name}-ts.js`, (cfg) => {
+        cfg.replace(/class (.*) extends/, 'class $1Ts extends');
+        cfg.replace('@augments WebDriver', '@augments WebDriverTs');
+        cfg.replace(/\/\*\*(.+?(?=\*\/))\*\//gs, (global) => {
+          if (!global.includes('@return')) {
+            return global.replace(/\*\//g, '* @return {Promise<any>}\n*/');
+          }
+          return global;
+        });
+        cfg.replace(/Promise<object/g, 'Promise<any');
+      });
     }
   },
 
